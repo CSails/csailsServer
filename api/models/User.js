@@ -7,8 +7,23 @@
 
 module.exports = {
 
-  attributes: {
+	attributes: {
+		username: {
+			type: 'string'
+		},
+		password: {
+			type: 'string'
+		},
+	},
+	
+	beforeCreate: function(values, cb) {
 
-  }
+		// Hash password
+		bcrypt.hash(values.password, 10, function(err, hash) {
+			if(err) return cb(err);
+			values.password = hash;
+			
+			cb();
+		});
+	}
 };
-
