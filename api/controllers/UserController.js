@@ -16,7 +16,8 @@ module.exports = {
 			password: req.param('password')
 		}, function(err, user) {
 			if(err) {
-				return res.serverError()
+				//账号唯一报错
+				return res.json({err:'用户名已被注册'})
 			}
 
 			req.session.user = user;
@@ -24,7 +25,8 @@ module.exports = {
 			//TODO:登陆成功逻辑
 
 			return res.json({
-				result: '登陆成功'
+				result: '注册成功',
+				user:user
 			})
 		})
 	},
@@ -43,14 +45,15 @@ module.exports = {
 			if(!user) {
 				//没有找到用户
 				return res.json({
-					err: '没有数据'
+					err: '没有找到用户'
 				})
 			}
 			
+			//验证用户密码匹配
 			var match = bcrypt.compareSync(req.param('password'),user.password);
 			
 			if(match){
-				//账号密码匹配,保存登陆状态,返回登陆信息
+				//账号密码匹配成功,保存登陆状态,返回登陆信息
 				req.session.user = user;
 				return res.json({
 					result:'登陆成功',

@@ -37,6 +37,11 @@ module.exports.routes = {
   },
   'POST /signup':'UserController.signup',
   'POST /login':'UserController.login',
+  
+  
+  //测试页面
+  '/login':{view:'test/login'},
+  '/signup':{view:'test/signup'},
 
   /***************************************************************************
   *                                                                          *
