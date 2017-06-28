@@ -5,6 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 var bcrypt = require('bcrypt-nodejs');
+var passport = require('passport');
 
 module.exports = {
 	/*
@@ -17,7 +18,9 @@ module.exports = {
 		}, function(err, user) {
 			if(err) {
 				//账号唯一报错
-				return res.json({err:'用户名已被注册'})
+				return res.json({
+					err: '用户名已被注册'
+				})
 			}
 
 			req.session.user = user;
@@ -26,7 +29,7 @@ module.exports = {
 
 			return res.json({
 				result: '注册成功',
-				user:user
+				user: user
 			})
 		})
 	},
@@ -35,38 +38,23 @@ module.exports = {
 	 * 用户登陆
 	 * */
 	login: function(req, res) {
-		User.findOne({
-			username: req.param('username')
-		}, function(err, user) {
-			if(err) {
-				return res.serverError();
-			}
 
-			if(!user) {
-				//没有找到用户
-				return res.json({
-					err: '没有找到用户'
-				})
+		passport.authenticate('local', function(err, user, info) {
+			if((err) || (!user)) {
+				return res.send({
+					message: info.message,
+					user: user
+				});
 			}
-			
-			//验证用户密码匹配
-			var match = bcrypt.compareSync(req.param('password'),user.password);
-			
-			if(match){
-				//账号密码匹配成功,保存登陆状态,返回登陆信息
-				req.session.user = user;
-				return res.json({
-					result:'登陆成功',
-					user:user
-				})
-			}else{
-				//密码错误
-				return res.json({
-					err:'密码错误'
-				})
-			}
+			req.logIn(user, function(err) {
+				if(err) res.send(err);
+				return res.send({
+					message: info.message,
+					user: user
+				});
+			});
 
-		})
+		})(req, res);
 	}
 
 };
