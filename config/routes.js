@@ -42,6 +42,7 @@ module.exports.routes = {
   //测试页面
   '/login':{view:'test/login'},
   '/signup':{view:'test/signup'},
+  '/test':'ArticleController.test'
 
   /***************************************************************************
   *                                                                          *
